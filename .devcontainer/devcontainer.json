@@ -1,0 +1,20 @@
+{
+  "name": "Event Analytics Dev Container",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "api",
+  "workspaceFolder": "/EVENT_ANALYTICS_PLATFORM_BE",
+  "shutdownAction": "stopCompose",
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance"
+  ],
+  // Forwarding local SSH Key to the dev container
+  "runArgs": [
+    "--env", "SSH_AUTH_SOCK=/ssh-agent"
+  ],
+  "forwardPorts": [
+    22
+  ]
+}

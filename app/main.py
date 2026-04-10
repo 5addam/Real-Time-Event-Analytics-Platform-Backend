@@ -9,8 +9,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import settings
+from app.core.database import init_db
+
 # importing routers for different API endpoints
 from app.apis.system import router as system_router
+from app.apis.events import router as events_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
@@ -21,6 +25,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Startup code can be added here (e.g., database connections, cache initialization)
     logger.info("Starting up the Event Analytics Platform API...")
+    logger.info("Initializing database connection...")
+    await init_db()
+    logger.info("Database initialized successfully.")
     yield
     # Shutdown code can be added here (e.g., closing database connections, cleaning up resources)
     logger.info("Shutting down the Event Analytics Platform API...")
@@ -29,7 +36,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app with lifespan for startup and shutdown events
 app = FastAPI(title="Event Analytics Platform API", version="1.0.0",
                lifespan=lifespan,
-               debug=True)
+               debug=settings.DEBUG)
 
 # Add CORS middleware to allow cross-origin requests
 app.add_middleware(CORSMiddleware,
@@ -40,6 +47,7 @@ app.add_middleware(CORSMiddleware,
 # Include the system router for health checks and API info
 logger.info("Registering system API routes...")
 app.include_router(system_router)
+app.include_router(events_router)
 logger.info("System API routes registered successfully.")
 
 
